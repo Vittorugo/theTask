@@ -84,12 +84,7 @@ for usuario in dados_json:
 ################################################################################
 ################################################################################
 
-
-
-#for i in dados_organizados:
- #   print(dados_organizados)
-
 converter_json = json.dumps(str(dados_organizados), indent= 2, separators = (',',':'))
 
-for i in converter_json:
-    print(i)
+print(converter_json)
+
