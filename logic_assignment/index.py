@@ -1,75 +1,95 @@
 import json
 from datetime import datetime
 
-file_json = open('U1ZQR43RB.json','r')
-dados_json = json.load(file_json)
+arquivo_json = open('U1ZQR43RB.json')
+dados_json    = json.load(arquivo_json) # 214 objetos ...
+
+###################  LISTAS E VARIAVEIS  #################################
+##########################################################################
+
+dados_organizados = [] # lista com os dados organizados conforme a questão pediu.
+
+lista_de_usuarios = [] # lista com os usuários encontrados ...
+lista_mensagens  = [] # lista com todas as mensagens dos usuarios ...
+dados_usuario = {}  # dicionario com os atributos nome, mensagens e mensagens respondidas antes de dois minutos
 
 
-list_json = []  # lista com os objetos.
-lista_de_usuarios = [] # lista com o nome dos participantes da conversa.
-fast_msg = [] # lista para adicionar msg respondidas rapidamente.
+lista_sub_mensagens = [] #lista com as mensagens respondidas antes de dois minutos
 
+###########################################################################
+###########################################################################
 
-class user():
-
-    def __init__(self, nome, mensage):
-
-        self.username = nome
-        self.mensages = mensage
-
-
-def user_msg( username, msg ):
-
-
-    obj_user_msg = user(username, msg)
-
-    list_json.append(obj_user_msg)
-    #lista de usuários ...
-
-
-obj_msg = {}
-list_Sub_mensage = []
 
 for usuario in dados_json:
 
-    fast_msg = []
-    time_msg = float(usuario['ts'])
-    ts_first_msg = datetime.fromtimestamp(time_msg)
+
+    if usuario['user'] not in lista_de_usuarios:
+
+        # Adicionando os usuários encontrados no .json ...
+        lista_de_usuarios.append(usuario['user'])
+
+        # lista_de_usuários = ['U0MFNAG05', 'U0KK0T3CG', 'U1ZQR43RB', 'USLACKBOT']
 
 
-    list_user_msg = []
-    usuario_consultado = usuario['user']
+        lista_mensagens = []
 
-    if usuario_consultado not in lista_de_usuarios:
+        for mensagem in dados_json:
 
-        lista_de_usuarios.append(usuario_consultado)
+            if (usuario['user'] == mensagem['user']):
 
-        for nome in dados_json:
-
-            if  usuario_consultado == nome['user']:
-
-                list_user_msg.append(nome['text']) # separando as msgs do usuario...
-
-        user_msg(usuario_consultado, list_user_msg)
+                # Adicionando mensagens enviadas por cada usuário encontrado ...
+                lista_mensagens.append(mensagem['text'])
 
 
-    else:
+        # criando um objeto com as informações de usuário e mensagens encontradas ...
 
-        # timestamp da primeira msg ...
-        timestamp_first_msg = float(usuario['ts'])
-        ts_first = datetime.fromtimestamp(timestamp_first_msg)
-
-        for  time_sub_msg in dados_json:
-
-            timestamp_last_msg = float(time_sub_msg['ts'])  # tempo da última msg ...
-            ts_last = datetime.fromtimestamp(timestamp_last_msg)
-
-            if (ts_last.minute - ts_first.minute) < 2:
-                fast_msg.append(time_sub_msg['text'])  # adicionado msgs respondidas em menos de 2 minutos ...
-
-        obj_msg[usuario['ts']] = fast_msg  # objeto com chave = horário da mensagem e valor = mensagens respondidas antes de 2 minutos.
-
-        list_Sub_mensage.append(obj_msg)
+        dados_usuario['username'] = usuario['user']
+        dados_usuario['mensagens']= lista_mensagens
 
 
+        for sub_mensagens in dados_json:
 
+            dic_sub_msg = {} # dicionário auxiliar para as sub_mensagens ...
+            lista_aux_sub_msg   = [] # lista auxiliar para as sub mensagens ...
+
+            if sub_mensagens['text'] in lista_mensagens:
+
+                tempo_sub_msg = float(sub_mensagens['ts'])
+                tempo_sub_msg = datetime.fromtimestamp(tempo_sub_msg)
+
+                for mensagens_respondidas_rapidamente in dados_json:
+
+
+                    if sub_mensagens['text'] != mensagens_respondidas_rapidamente['text']:
+
+                        tempo_resposta = float(mensagens_respondidas_rapidamente['ts'])
+                        tempo_resposta = datetime.fromtimestamp(tempo_resposta)
+
+                        # condição comparando o tempo entre uma mensagem e suas respostas ...
+                        if (tempo_resposta.hour == tempo_sub_msg.hour) and (tempo_resposta.minute - tempo_sub_msg.minute) <= 2 :
+
+                            lista_aux_sub_msg.append(mensagens_respondidas_rapidamente['text'])
+
+
+                dic_sub_msg[tempo_sub_msg] = lista_aux_sub_msg
+                lista_sub_mensagens.append(dic_sub_msg)
+
+
+        dados_usuario['mensagens_rapidas'] = lista_sub_mensagens #adicionando msg respondidas antes de dois minutos ...
+
+        dados_organizados.append(dados_usuario) # adicionando os objetos a uma lista ...
+
+        dados_usuario = {}
+
+################################################################################
+################################################################################
+
+
+
+#for i in dados_organizados:
+ #   print(dados_organizados)
+
+converter_json = json.dumps(str(dados_organizados), indent= 2, separators = (',',':'))
+
+for i in converter_json:
+    print(i)
