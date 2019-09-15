@@ -54,14 +54,16 @@ for usuario in dados_json:
 
             if sub_mensagens['text'] in lista_mensagens:
 
+                # tempo que a mensagem foi enviada
                 tempo_sub_msg = float(sub_mensagens['ts'])
                 tempo_sub_msg = datetime.fromtimestamp(tempo_sub_msg)
 
                 for mensagens_respondidas_rapidamente in dados_json:
 
-
+                    # verifica se as mensagens são diferentes para evitar redundância ...
                     if sub_mensagens['text'] != mensagens_respondidas_rapidamente['text']:
 
+                        # tempo mensagens de resposta da mensagem enviada
                         tempo_resposta = float(mensagens_respondidas_rapidamente['ts'])
                         tempo_resposta = datetime.fromtimestamp(tempo_resposta)
 
@@ -84,12 +86,7 @@ for usuario in dados_json:
 ################################################################################
 ################################################################################
 
-
-
-#for i in dados_organizados:
- #   print(dados_organizados)
-
 converter_json = json.dumps(str(dados_organizados), indent= 2, separators = (',',':'))
 
-for i in converter_json:
-    print(i)
+print(converter_json)
+
