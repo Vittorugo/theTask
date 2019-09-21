@@ -73,7 +73,7 @@ for usuario in dados_json:
                             lista_aux_sub_msg.append(mensagens_respondidas_rapidamente['text'])
 
 
-                dic_sub_msg[tempo_sub_msg] = lista_aux_sub_msg
+                dic_sub_msg[str(tempo_sub_msg)] = lista_aux_sub_msg
                 lista_sub_mensagens.append(dic_sub_msg)
 
 
@@ -86,7 +86,7 @@ for usuario in dados_json:
 ################################################################################
 ################################################################################
 
-converter_json = json.dumps(str(dados_organizados), indent= 2, separators = (',',':'))
+converter_json = json.dumps(dados_organizados, indent= 2, separators = (',',':'))
 
 print(converter_json)
 
